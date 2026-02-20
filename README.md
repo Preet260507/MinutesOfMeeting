@@ -1,5 +1,5 @@
 # 📅 Minutes of Meeting (MOM) System
-![Dashboard Screenshot](dashboard.png)
+![Dashboard Screenshot](Dashboard.png)
 A specialized meeting scheduling and management system built with **.NET**.
 
 ## 🚀 Features
