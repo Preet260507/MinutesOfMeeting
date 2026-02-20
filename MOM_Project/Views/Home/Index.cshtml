@@ -1,0 +1,182 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Welcome back, Admin! 👋</h2>
+            <p class="text-muted">Here is what's happening in your organization today.</p>
+        </div>
+        <a asp-controller="Meeting" asp-action="Create" class="btn btn-primary px-4 py-2 shadow-sm">
+            <i class="bi bi-plus-lg me-2"></i> Schedule Meeting
+        </a>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="bi bi-calendar-event fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small text-uppercase fw-bold">Upcoming</div>
+                        <div class="fs-2 fw-bold text-dark">@ViewBag.Upcoming</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #FF9D6C 0%, #BB4E75 100%);">
+                        <i class="bi bi-people fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small text-uppercase fw-bold">Total Staff</div>
+                        <div class="fs-2 fw-bold text-dark">@ViewBag.TotalStaff</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <i class="bi bi-check2-circle fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small text-uppercase fw-bold">Total Meetings</div>
+                        <div class="fs-2 fw-bold text-dark">@ViewBag.TotalMeetings</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <i class="bi bi-geo-alt fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small text-uppercase fw-bold">Venues</div>
+                        <div class="fs-2 fw-bold text-dark">@ViewBag.Venues</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Meeting Trends</h5>
+                    <span class="badge bg-light text-dark border">Last 6 Months</span>
+                </div>
+                
+                <div style="height: 320px; width: 100%;">
+                    <canvas id="dashboardChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm p-4 h-100 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <h5 class="fw-bold mb-4 border-bottom border-white pb-3" style="border-color: rgba(255,255,255,0.2) !important;">Quick Actions</h5>
+                <div class="d-grid gap-3">
+                    <a asp-controller="Meeting" asp-action="Create" class="btn btn-light text-primary fw-bold text-start p-3 shadow-sm">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Schedule New Meeting
+                    </a>
+                    <a asp-controller="MeetingMember" asp-action="Index" class="btn btn-outline-light text-start p-3 border-0" style="background: rgba(255,255,255,0.1);">
+                        <i class="bi bi-people-fill me-2"></i> View Attendees List
+                    </a>
+                    <a asp-controller="Staff" asp-action="AddEdit" class="btn btn-outline-light text-start p-3 border-0" style="background: rgba(255,255,255,0.1);">
+                        <i class="bi bi-person-plus-fill me-2"></i> Add Staff Member
+                    </a>
+                    <a asp-controller="Department" asp-action="AddEdit" class="btn btn-outline-light text-start p-3 border-0" style="background: rgba(255,255,255,0.1);">
+                        <i class="bi bi-building-fill me-2"></i> Add Department
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('dashboardChart').getContext('2d');
+
+        // Create a pretty gradient for the chart
+        var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(118, 75, 162, 0.4)'); // Purple (matches your theme)
+        gradient.addColorStop(1, 'rgba(118, 75, 162, 0.0)'); // Transparent
+
+        // Get Data safely from ViewBag
+        var labels = @Html.Raw(ViewBag.ChartLabels ?? "[]");
+        var dataPoints = @Html.Raw(ViewBag.ChartData ?? "[]");
+
+        // Fallback if no data (shows empty graph instead of crashing)
+        if (labels.length === 0) {
+            labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+            dataPoints = [0, 0, 0, 0, 0, 0];
+        }
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Meetings Scheduled',
+                    data: dataPoints,
+                    borderColor: '#764ba2',       // Purple Line
+                    backgroundColor: gradient,    // Gradient Fill
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#764ba2',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    fill: true,
+                    tension: 0.4                  // Smooth Curves
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e2125',
+                        padding: 12,
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 14 },
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' Meetings';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5] },
+                        ticks: { stepSize: 1 }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>

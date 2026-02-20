@@ -1,0 +1,94 @@
+@model IEnumerable<MOM_Project.Models.Meeting>
+@{ ViewData["Title"] = "Meetings"; }
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0"><i class="bi bi-calendar-check-fill me-2"></i>Meetings</h2>
+            <p class="text-muted mb-0">Schedule and manage upcoming sessions.</p>
+        </div>
+        <a asp-action="AddEdit" class="btn btn-primary shadow-sm px-4 fw-bold">
+            <i class="bi bi-plus-lg me-2"></i>Schedule Meeting
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            // Determine Status Color
+            string statusClass = "border-start border-5 border-primary";
+            string badgeClass = "bg-primary";
+            string statusText = "Upcoming";
+
+            if (item.IsCancelled)
+            {
+                statusClass = "border-start border-5 border-danger opacity-75"; 
+                badgeClass = "bg-danger";
+                statusText = "Cancelled";
+            }
+            else if (item.MeetingDate < DateTime.Now)
+            {
+                statusClass = "border-start border-5 border-success";
+                badgeClass = "bg-success";
+                statusText = "Completed";
+            }
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100 @statusClass">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title fw-bold mb-0">@item.MeetingDescription</h5>
+                            <span class="badge @badgeClass">@statusText</span>
+                        </div>
+                        
+                        <div class="text-muted small mb-3">
+                            <i class="bi bi-geo-alt-fill me-1"></i> @item.MeetingVenueName
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="d-flex align-items-center text-dark fw-bold">
+                                <i class="bi bi-calendar-event me-2 text-secondary"></i> 
+                                @item.MeetingDate.ToString("MMM dd, yyyy")
+                            </div>
+                            <div class="d-flex align-items-center text-dark fw-bold">
+                                <i class="bi bi-clock me-2 text-secondary"></i> 
+                                @item.MeetingDate.ToString("hh:mm tt")
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <small class="text-muted">
+                                <i class="bi bi-people-fill me-1"></i> @item.ParticipantCount Participants
+                            </small>
+
+                            <div class="btn-group">
+                                @if (!item.IsCancelled && item.MeetingDate > DateTime.Now)
+                                {
+                                    <a asp-action="AddEdit" asp-route-id="@item.MeetingID" class="btn btn-sm btn-outline-primary" title="Edit Details">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+
+                                    <a asp-controller="MeetingMember" asp-action="Index" asp-route-id="@item.MeetingID" class="btn btn-sm btn-outline-info" title="Manage Participants">
+                                        <i class="bi bi-people-fill"></i>
+                                    </a>
+
+                                    <a asp-action="Cancel" asp-route-id="@item.MeetingID" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Are you sure you want to cancel this meeting?');" title="Cancel Meeting">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="MeetingMember" asp-action="Index" asp-route-id="@item.MeetingID" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-eye-fill me-1"></i> View Members
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

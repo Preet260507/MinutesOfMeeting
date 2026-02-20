@@ -1,0 +1,63 @@
+@{ 
+    ViewData["Title"] = "Add Members";
+    int meetingId = ViewBag.MeetingID;
+    var staffList = ViewBag.AvailableStaff as List<SelectListItem>;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <form asp-action="Add">
+                <input type="hidden" name="id" value="@meetingId" />
+
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-header bg-success text-white p-4 rounded-top-4">
+                        <h4 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i>Add New Members</h4>
+                        <p class="mb-0 opacity-75 small">Adding to: @ViewBag.MeetingTitle</p>
+                    </div>
+
+                    <div class="card-body p-0">
+                        @if (staffList != null && staffList.Any())
+                        {
+                            <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-bold">Select people to invite:</span>
+                            </div>
+
+                            <div style="max-height: 400px; overflow-y: auto;" class="p-0">
+                                <div class="list-group list-group-flush">
+                                    @foreach (var staff in staffList)
+                                    {
+                                        <label class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 px-4 cursor-pointer">
+                                            <input class="form-check-input flex-shrink-0" 
+                                                   type="checkbox" 
+                                                   name="selectedStaff" 
+                                                   value="@staff.Value" 
+                                                   style="width: 1.3em; height: 1.3em;">
+                                            <span class="fw-bold text-dark">@staff.Text</span>
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="p-5 text-center text-muted">
+                                <i class="bi bi-check-circle display-4 mb-3 d-block text-success opacity-50"></i>
+                                <p class="mb-0">All available staff are already in this meeting!</p>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-footer p-4 bg-light d-flex justify-content-end gap-2 rounded-bottom-4">
+                        <a asp-action="Index" asp-route-id="@meetingId" class="btn btn-light text-secondary fw-bold px-4">Cancel</a>
+                        
+                        @if (staffList != null && staffList.Any())
+                        {
+                            <button type="submit" class="btn btn-success fw-bold px-5 shadow-sm">Add Selected</button>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

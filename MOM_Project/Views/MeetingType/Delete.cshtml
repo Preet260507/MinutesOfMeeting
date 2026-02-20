@@ -1,0 +1,32 @@
+@model MOM_Project.Models.MeetingType
+
+@{ ViewData["Title"] = "Delete Meeting Type"; }
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Delete Confirmation</h5>
+                </div>
+                <div class="card-body text-center p-5">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger shadow-sm mb-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.ErrorMessage
+                        </div>
+                    }
+                    <h4 class="text-danger mb-3">Are you sure?</h4>
+                    <p class="lead">Do you really want to delete <strong>@Model.MeetingTypeName</strong>?</p>
+                    <p class="text-muted small">This action cannot be undone.</p>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="MeetingTypeID"/>
+                        <a asp-action="Index" class="btn btn-outline-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Delete Record</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

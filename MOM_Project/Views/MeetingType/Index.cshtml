@@ -1,0 +1,68 @@
+@model IEnumerable<MOM_Project.Models.MeetingType>
+
+@{
+    ViewData["Title"] = "Meeting Types";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary fw-bold">Meeting Types</h2>
+            <p class="text-muted">Manage the categories for your organization's meetings.</p>
+        </div>
+        <a asp-action="AddEdit" class="btn btn-primary shadow-sm">
+            <i class="bi bi-person-plus-fill"></i> Add New Type
+        </a>
+    </div>
+
+    <div class="card shadow border-0 rounded-3">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Meeting Types</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-uppercase text-secondary small">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Type Name</th>
+                            <th>Created</th>
+                            <th>modified</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold">#@item.MeetingTypeID</td>
+                                <td>
+                                    <span class="badge bg-soft-primary text-primary border border-primary-subtle">
+                                        @item.MeetingTypeName
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    @item.Created
+                                </td>
+                                <td class="text-muted">
+                                    @item.Modified
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a asp-action="AddEdit" asp-route-id="@item.MeetingTypeID" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@item.MeetingTypeID" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <p class="text-muted mb-0">No meeting types found. Click "Add New Type" to start.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,121 @@
+@model IEnumerable<MOM_Project.Models.Staff>
+
+@{ 
+    // Retrieve Data from ViewBag
+    int meetingId = ViewBag.MeetingID;
+    string title = ViewBag.MeetingTitle;
+    DateTime date = ViewBag.MeetingDate;
+    bool isEditable = ViewBag.IsEditable;
+    var availableStaff = ViewBag.AvailableStaff as List<SelectListItem>;
+
+    ViewData["Title"] = isEditable ? "Manage Members" : "View Members";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a asp-action="Index" class="text-decoration-none text-muted small mb-1">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+            <h2 class="fw-bold text-dark mb-0">@title</h2>
+            <div class="text-muted small">
+                <i class="bi bi-calendar-event me-1"></i> @date.ToString("MMMM dd, yyyy @ hh:mm tt")
+            </div>
+        </div>
+        <div>
+            @if(isEditable) { <span class="badge bg-primary px-3 py-2">Editing Mode</span> }
+            else { <span class="badge bg-secondary px-3 py-2">Read-Only Mode</span> }
+        </div>
+    </div>
+
+    <div class="row">
+        @if (isEditable)
+        {
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm border-0 bg-light">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-plus-fill me-2"></i>Add New Member</h5>
+                        
+                        <form asp-action="AddMember" class="row g-3 align-items-center">
+                            <input type="hidden" name="meetingId" value="@meetingId" />
+                            
+                            <div class="col-md-9">
+                                @if (availableStaff != null && availableStaff.Any())
+                                {
+                                    <select name="staffId" class="form-select form-select-lg" required>
+                                        <option value="">-- Select Staff Member to Add --</option>
+                                        @foreach (var staff in availableStaff)
+                                        {
+                                            <option value="@staff.Value">@staff.Text</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" value="All available staff are already added!" disabled />
+                                }
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" 
+                                        @(availableStaff == null || !availableStaff.Any() ? "disabled" : "")>
+                                    <i class="bi bi-plus-lg me-2"></i>Add Member
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-people me-2"></i>Current Participants (@Model.Count())</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Staff Name</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                                @if (isEditable) { <th class="text-end pe-4">Action</th> }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark">@item.StaffName</td>
+                                    <td><span class="badge bg-light text-dark border">@item.DepartmentName</span></td>
+                                    <td class="text-muted small">@item.EmailAddress</td>
+                                    
+                                    @if (isEditable)
+                                    {
+                                        <td class="text-end pe-4">
+                                            <a asp-action="RemoveMember" 
+                                               asp-route-meetingId="@meetingId" 
+                                               asp-route-staffId="@item.StaffID"
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash-fill"></i> Remove
+                                            </a>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                
+                @if (!Model.Any())
+                {
+                    <div class="p-5 text-center text-muted">
+                        <i class="bi bi-person-x display-4 mb-3 d-block opacity-25"></i>
+                        <p>No members in this meeting yet.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

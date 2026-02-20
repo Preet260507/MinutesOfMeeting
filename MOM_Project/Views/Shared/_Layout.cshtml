@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MOM Premium</title>
+    
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div id="wrapper">
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading">
+                <i class="bi bi-diagram-3-fill me-3"></i> MOM <span style="opacity:0.7; font-weight:300; margin-left:5px;">System</span>
+            </div>
+            
+            <div class="list-group list-group-flush mt-4">
+                <a asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                    <i class="bi bi-grid-fill me-3"></i> Dashboard
+                </a>
+                
+                <div class="sidebar-subheading">Configuration</div>
+                
+                <a asp-controller="Department" asp-action="Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Department" ? "active" : "")">
+                    <i class="bi bi-buildings-fill me-3"></i> Departments
+                </a>
+                <a asp-controller="MeetingType" asp-action="Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "MeetingType" ? "active" : "")">
+                    <i class="bi bi-tags-fill me-3"></i> Meeting Types
+                </a>
+                <a asp-controller="Venue" asp-action="Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Venue" ? "active" : "")">
+                    <i class="bi bi-geo-alt-fill me-3"></i> Venues
+                </a>
+                <a asp-controller="Staff" asp-action="Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Staff" ? "active" : "")">
+                    <i class="bi bi-people-fill me-3"></i> Staff Members
+                </a>
+                
+                <a asp-controller="MeetingMember" asp-action="Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "MeetingMember" ? "active" : "")">
+                    <i class="bi bi-people-fill me-3"></i> Meeting Members
+                </a>
+               
+
+                <div class="sidebar-subheading">Operations</div>
+
+                <a asp-controller="Meeting" asp-action="Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Meeting" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
+                    <i class="bi bi-calendar-check-fill me-3"></i> Meetings
+                </a>
+                
+                <a asp-controller="Meeting" asp-action="AddEdit" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Meeting" && ViewContext.RouteData.Values["Action"]?.ToString() == "AddEdit" ? "active" : "")">
+                    <i class="bi bi-plus-circle-fill me-3"></i> Schedule New
+                </a>
+            </div>
+        </div>
+
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-glass shadow-sm">
+                <div class="container-fluid">
+                    <button class="btn text-secondary" id="menu-toggle"><i class="bi bi-list fs-4"></i></button>
+                    
+                    <div class="ms-auto d-flex align-items-center">
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="me-3 text-end d-none d-md-block">
+                                    <div class="fw-bold text-dark" style="font-size: 0.9rem;">Administrator</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">IT Department</div>
+                                </div>
+                                <img src="~/images/default-avatar.png" alt="Profile" width="45" height="45" class="rounded-circle shadow-sm object-fit-cover border border-2 border-primary" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';">
+                            </a>
+        
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="profileDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2" asp-controller="Profile" asp-action="Index">
+                                        <i class="bi bi-person-circle me-2 text-primary"></i> My Profile
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 text-danger" asp-controller="Login" asp-action="Logout">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Log out
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container-fluid p-4 px-md-5">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+    var msgType = '@TempData["ErrorType"]';
+    var message = '@TempData["Message"]';
+
+    if (msgType && message) {
+        if (msgType == 'success') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: message,
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+        else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: message
+            });
+        }
+    }
+    </script>
+</body>
+</html>

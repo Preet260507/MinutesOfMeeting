@@ -1,0 +1,58 @@
+@model IEnumerable<MOM_Project.Models.Meeting>
+@{ ViewData["Title"] = "Meeting Directory"; }
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0"><i class="bi bi-people-fill me-2"></i>Meeting Members</h2>
+            <p class="text-muted mb-0">Select a meeting to manage its participants.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            // Determine Status
+            bool isUpcoming = item.MeetingDate > DateTime.Now && !item.IsCancelled;
+            string statusClass = isUpcoming ? "border-primary" : (item.IsCancelled ? "border-danger opacity-75" : "border-success");
+            string statusBadge = isUpcoming ? "bg-primary" : (item.IsCancelled ? "bg-danger" : "bg-success");
+            string statusText = isUpcoming ? "Upcoming" : (item.IsCancelled ? "Cancelled" : "Completed");
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100 border-start border-5 @statusClass">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title fw-bold mb-0 text-truncate" style="max-width: 70%;">@item.MeetingDescription</h5>
+                            <span class="badge @statusBadge">@statusText</span>
+                        </div>
+                        
+                        <div class="text-muted small mb-3">
+                            <i class="bi bi-calendar-event me-1"></i> @item.MeetingDate.ToString("MMM dd, yyyy @ hh:mm tt")
+                            <br>
+                            <i class="bi bi-geo-alt me-1"></i> @item.MeetingVenueName
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <small class="fw-bold text-secondary">
+                                <i class="bi bi-person-check-fill me-1"></i> @item.ParticipantCount Members
+                            </small>
+
+                            @if (isUpcoming)
+                            {
+                                <a asp-action="Manage" asp-route-id="@item.MeetingID" class="btn btn-sm btn-primary shadow-sm px-3 fw-bold">
+                                    <i class="bi bi-gear-fill me-2"></i>Manage Members
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="Manage" asp-route-id="@item.MeetingID" class="btn btn-sm btn-outline-secondary px-3">
+                                    <i class="bi bi-eye-fill me-2"></i>View Members
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

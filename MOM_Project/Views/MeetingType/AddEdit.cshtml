@@ -1,0 +1,49 @@
+@model MOM_Project.Models.MeetingType
+
+@{
+    if (Model == null) { throw new Exception("Model is null."); }
+    bool isEdit = Model.MeetingTypeID > 0;
+    ViewData["Title"] = isEdit ? "Edit Meeting Type" : "Add Meeting Type";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header py-3 @(isEdit ? "bg-warning-subtle text-warning-emphasis" : "bg-primary text-white")">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi @(isEdit ? "bi-pencil-square" : "bi-tags-fill") me-2"></i>
+                        @(isEdit ? "Edit Meeting Type" : "Add Meeting Type")
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="AddEdit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="MeetingTypeID" />
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="MeetingTypeName" class="form-control" placeholder="Type Name" />
+                            <label asp-for="MeetingTypeName">Meeting Type Name</label>
+                            <span asp-validation-for="MeetingTypeName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <textarea asp-for="Remarks" class="form-control" placeholder="Remarks" style="height: 100px"></textarea>
+                            <label asp-for="Remarks">Remarks (Optional)</label>
+                            <span asp-validation-for="Remarks" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Index" class="btn btn-light text-secondary">Cancel</a>
+                            <button type="submit" class="btn @(isEdit ? "btn-warning" : "btn-primary") px-4 fw-bold">
+                                @(isEdit ? "Update" : "Create")
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

@@ -1,0 +1,59 @@
+@model IEnumerable<MOM_Project.Models.MeetingVenue>
+
+@{
+    ViewData["Title"] = "Meeting Venues";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary fw-bold">Meeting Venues</h2>
+            <p class="text-muted">Manage the physical rooms or virtual links.</p>
+        </div>
+        <a asp-action="AddEdit" class="btn btn-primary shadow-sm">
+            <i class="bi bi-person-plus-fill"></i> Add New Venue
+        </a>
+    </div>
+
+    <div class="card shadow border-0 rounded-3">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Venues</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-uppercase text-secondary small">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Venue Name</th>
+                            <th>Created Date</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold">#@item.MeetingVenueID</td>
+                                <td>
+                                    <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                                    <span class="fw-medium">@item.MeetingVenueName</span>
+                                </td>
+                                <td class="text-muted small">
+                                    @(item.Created?.ToString("dd MMM yyyy") ?? "N/A")
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a asp-action="AddEdit" asp-route-id="@item.MeetingVenueID" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@item.MeetingVenueID" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (!Model.Any()) {
+                    <div class="text-center py-5"><p class="text-muted">No venues found.</p></div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

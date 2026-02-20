@@ -1,0 +1,49 @@
+@model MOM_Project.Models.Staff
+@{
+    ViewData["Title"] = "Confirm Removal";
+    int meetingId = ViewBag.MeetingID;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4 border-top border-danger border-5">
+                <div class="card-body p-5 text-center">
+                    
+                    <div class="mb-4">
+                        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 4rem;"></i>
+                    </div>
+
+                    <h3 class="fw-bold text-dark mb-3">Remove Participant?</h3>
+                    
+                    <p class="text-muted fs-5 mb-4">
+                        Are you sure you want to remove 
+                        <strong class="text-dark">@Model.StaffName</strong> 
+                        from the meeting <strong class="text-dark">"@ViewBag.MeetingTitle"</strong> 
+                        (@ViewBag.MeetingDate)?
+                    </p>
+
+                    <div class="bg-light rounded p-3 mb-4 text-start d-inline-block text-muted small border">
+                        <div><i class="bi bi-person-badge me-2"></i> <strong>ID:</strong> @Model.StaffID</div>
+                        <div><i class="bi bi-envelope me-2"></i> <strong>Email:</strong> @Model.EmailAddress</div>
+                    </div>
+
+                    <form asp-action="RemoveMember" method="post">
+                        <input type="hidden" name="meetingId" value="@meetingId" />
+                        <input type="hidden" name="staffId" value="@Model.StaffID" />
+                        
+                        <div class="d-flex justify-content-center gap-3 mt-2">
+                            <a asp-action="Manage" asp-route-id="@meetingId" class="btn btn-light btn-lg px-4 text-secondary fw-bold border">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg px-4 fw-bold shadow-sm">
+                                <i class="bi bi-trash-fill me-2"></i> Yes, Remove
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
