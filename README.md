@@ -20,7 +20,7 @@ I have designed the interface to be both functional and visually striking, utili
 
 | 🏷️ Meeting Types | 🏬 Meeting Departments |
 | :---: | :---: |
-| ![Types](Meeting-Types.png) | ![Remarks](.png) |
+| ![Types](Meeting-Types.png) | ![Remarks](Departments.png) |
 | *Categorizing sessions (AI, Research, etc.)* | *Capturing key notes and session outcomes* |
 
 | 👤 User Profiles | 👬 Meeting Members |
