@@ -18,32 +18,52 @@ namespace MOM_Project.Controllers
         }
         #endregion
         
-        #region GetAllDepartments
+        #region Get All & Search
         public IActionResult Index()
         {
+            return GetFilteredDepartments(""); 
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Index(IFormCollection form)
+        {
+            
+            string searchTerm = form["searchTerm"].ToString();
+            
+            ViewBag.SearchTerm = searchTerm; 
+    
+            return GetFilteredDepartments(searchTerm);
+        }
+        
+        private IActionResult GetFilteredDepartments(string searchTerm)
+        {
+            if (HttpContext.Session.GetString("AdminUser") == null) 
+                return RedirectToAction("Index", "Login");
             List<Department> list = new List<Department>();
-            using (MySqlConnection conn = new MySqlConnection(_connString))
+
+            using (MySqlConnection connection = new MySqlConnection(_connString))
             {
-                conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand("sp_GetAllDepartments", conn))
+                connection.Open();
+                using (MySqlCommand command = new MySqlCommand("sp_GetAllDepartments", connection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("p_SearchTerm", searchTerm ?? "");
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            list.Add(new Department
-                            {
-                                DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
-                                DepartmentName = reader["DepartmentName"].ToString(),
-                                Created = Convert.ToDateTime(reader["Created"]),
-                                Modified = Convert.ToDateTime(reader["Modified"])
-                            });
+                            Department model = new Department();
+                            model.DepartmentID = reader.GetInt32("DepartmentID");
+                            model.DepartmentName = reader.GetString("DepartmentName");
+                            model.Created = reader.GetDateTime("Created");
+                            model.Modified = reader.GetDateTime("Modified");
+                            list.Add(model);
                         }
                     }
                 }
             }
-            return View(list);
+            return View("Index", list); // explicitly return the Index view
         }
         #endregion
         
@@ -206,5 +226,7 @@ public IActionResult DeleteConfirmed(int id)
 }
 
 #endregion
+
+
     }
 }

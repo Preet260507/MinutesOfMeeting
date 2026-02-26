@@ -172,3 +172,23 @@ body {
   font-weight: 500;
   letter-spacing: 0.3px;
 }
+
+/* Sidebar Toggle Animation */
+#wrapper {
+  overflow-x: hidden;
+  transition: all 0.7s ease-in-out;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: -15rem; /* Matches your sidebar width */
+}
+
+/* On mobile, invert the behavior so it hides by default */
+@media (max-width: 788px) {
+  #sidebar-wrapper {
+    margin-left: -5rem;
+  }
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+  }
+}

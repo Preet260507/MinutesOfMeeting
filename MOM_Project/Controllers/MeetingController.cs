@@ -32,6 +32,7 @@ namespace MOM_Project.Controllers
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetMeetings", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("p_SearchTerm", "");
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -243,6 +244,7 @@ namespace MOM_Project.Controllers
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetAllVenues", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("p_SearchTerm", "");
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read()) 
@@ -260,6 +262,7 @@ namespace MOM_Project.Controllers
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetAllMeetingTypes", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("p_SearchTerm", "");
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read()) 

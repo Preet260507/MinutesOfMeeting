@@ -18,44 +18,51 @@ namespace MOM_Project.Controllers
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        #region Get All Venues
-        // ---------------------------------------------------------
-        // 1. INDEX: List all venues
-        // ---------------------------------------------------------
+        #region Get All & Search
         public IActionResult Index()
         {
+            return GetFilteredVenues(""); 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Index(IFormCollection form)
+        {
+            string searchTerm = form["searchTerm"].ToString();
+            ViewBag.SearchTerm = searchTerm; 
+            return GetFilteredVenues(searchTerm);
+        }
+
+        private IActionResult GetFilteredVenues(string searchTerm)
+        {
             List<MeetingVenue> list = new List<MeetingVenue>();
-            
-            using (MySqlConnection connection = new MySqlConnection(_connString))
+            using (MySqlConnection conn = new MySqlConnection(_connString))
             {
-                connection.Open();
-                using (MySqlCommand command = new MySqlCommand("sp_GetAllVenues", connection))
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand("sp_GetAllVenues", conn))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("p_SearchTerm", searchTerm ?? "");
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            MeetingVenue model = new MeetingVenue();
-                            model.MeetingVenueID = reader.GetInt32("MeetingVenueID");
-                            model.MeetingVenueName = reader.GetString("MeetingVenueName");
-                            model.Created = reader.GetDateTime("Created");
-                            model.Modified = reader.GetDateTime("Modified");
-                            list.Add(model);
+                            list.Add(new MeetingVenue
+                            {
+                                MeetingVenueID = reader.GetInt32("MeetingVenueID"),
+                                MeetingVenueName = reader.GetString("MeetingVenueName"),
+                                Created = reader.GetDateTime("Created"),
+                                Modified = reader.GetDateTime("Modified")
+                            });
                         }
                     }
                 }
             }
-
-            return View(list);
+            return View("Index", list);
         }
         #endregion
 
         #region Add/Edit Venue
-        // ---------------------------------------------------------
-        // 2. ADD/EDIT (GET): Show form
-        // ---------------------------------------------------------
         [HttpGet]
         public IActionResult AddEdit(int? id)
         {
@@ -140,9 +147,6 @@ namespace MOM_Project.Controllers
         #endregion
 
         #region Delete Venues
-        // ---------------------------------------------------------
-        // 4. DELETE (GET): Show Confirmation
-        // ---------------------------------------------------------
         public IActionResult Delete(int? id)
         {
             if (id == null) return NotFound();

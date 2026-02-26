@@ -19,25 +19,36 @@ namespace MOM_Project.Controllers
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        #region Get All Staff
-        // ---------------------------------------------------------
-        // 1. INDEX: List all staff
-        // ---------------------------------------------------------
+        #region Get All & Search
         public IActionResult Index()
         {
-            List<Staff> staffList = new List<Staff>();
+            return GetFilteredStaff(""); 
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Index(IFormCollection form)
+        {
+            string searchTerm = form["searchTerm"].ToString();
+            ViewBag.SearchTerm = searchTerm; 
+            return GetFilteredStaff(searchTerm);
+        }
+
+        private IActionResult GetFilteredStaff(string searchTerm)
+        {
+            List<Staff> list = new List<Staff>();
             using (MySqlConnection conn = new MySqlConnection(_connString))
             {
                 conn.Open();
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetAllStaff", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("p_SearchTerm", searchTerm ?? "");
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            staffList.Add(new Staff
+                            list.Add(new Staff
                             {
                                 StaffID = Convert.ToInt32(reader["StaffID"]),
                                 StaffName = reader["StaffName"].ToString(),
@@ -51,7 +62,7 @@ namespace MOM_Project.Controllers
                     }
                 }
             }
-            return View(staffList);
+            return View("Index", list);
         }
         #endregion
 
@@ -240,34 +251,34 @@ namespace MOM_Project.Controllers
         }
         #endregion
 
-        #region Helper Methods
-        // ---------------------------------------------------------
-        // --- Helper for Dropdown ---
-        // ---------------------------------------------------------
-        private List<SelectListItem> GetDepartmentList()
+        private SelectList GetDepartmentList()
         {
-            var list = new List<SelectListItem>();
+            List<SelectListItem> departments = new List<SelectListItem>();
             using (MySqlConnection conn = new MySqlConnection(_connString))
             {
                 conn.Open();
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetAllDepartments", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+            
+                    // 🌟 ADD THIS EXACT LINE 🌟
+                    // This satisfies the database by sending a blank search term for the dropdown
+                    cmd.Parameters.AddWithValue("p_SearchTerm", ""); 
+
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            list.Add(new SelectListItem
-                            {
-                                Text = reader["DepartmentName"].ToString(),
-                                Value = reader["DepartmentID"].ToString()
+                            departments.Add(new SelectListItem 
+                            { 
+                                Value = reader["DepartmentID"].ToString(), 
+                                Text = reader["DepartmentName"].ToString() 
                             });
                         }
                     }
                 }
             }
-            return list;
+            return new SelectList(departments, "Value", "Text");
         }
-        #endregion
     }
 }

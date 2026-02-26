@@ -20,27 +20,21 @@ namespace MOM_Project.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        // ---------------------------------------------------------
-        // 1. INDEX: View Profile
-        // ---------------------------------------------------------
+        #region ViewProfile
         public IActionResult Index()
         {
             UserProfile profile = GetProfileData();
             return View(profile);
         }
-
-        // ---------------------------------------------------------
-        // 2. EDIT (GET): Show Edit Form
-        // ---------------------------------------------------------
+        #endregion
+        
+        #region EditProfile
         public IActionResult Edit()
         {
             UserProfile profile = GetProfileData();
             return View(profile);
         }
-
-        // ---------------------------------------------------------
-        // 3. EDIT (POST): Save Profile & Upload Image
-        // ---------------------------------------------------------
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(UserProfile model)
@@ -103,8 +97,9 @@ namespace MOM_Project.Controllers
             }
             return View(model);
         }
+        #endregion
 
-
+        #region Helper
         // --- Helper to Fetch Data ---
         private UserProfile GetProfileData()
         {
@@ -136,5 +131,7 @@ namespace MOM_Project.Controllers
 
             return profile;
         }
+        #endregion
+        
     }
 }

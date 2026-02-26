@@ -1,59 +1,71 @@
 @model IEnumerable<MOM_Project.Models.MeetingVenue>
+@{ ViewData["Title"] = "Venues"; }
 
-@{
-    ViewData["Title"] = "Meeting Venues";
-}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-primary fw-bold">Venues</h2>
+        <p class="text-muted">Manage rooms and locations for meetings.</p>
+    </div>
+    <a asp-action="AddEdit" class="btn btn-primary shadow-sm">
+        <i class="bi bi-geo-alt-fill me-2"></i> Add New Venue
+    </a>
+</div>
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-primary fw-bold">Meeting Venues</h2>
-            <p class="text-muted">Manage the physical rooms or virtual links.</p>
-        </div>
-        <a asp-action="AddEdit" class="btn btn-primary shadow-sm">
-            <i class="bi bi-person-plus-fill"></i> Add New Venue
-        </a>
+<div class="card shadow border-0 rounded-3">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+        <h6 class="m-0 font-weight-bold text-primary">All Venues</h6>
+        
+        <form asp-action="Index" method="post" class="m-0">
+            <div class="input-group shadow-sm" style="max-width: 400px; border-radius: 0.75rem; overflow: hidden;">
+                <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control premium-input border-0" placeholder="Search venues..." aria-label="Search">
+                <button class="btn btn-primary px-4 fw-bold" type="submit"><i class="bi bi-search"></i></button>
+                @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+                {
+                    <a asp-action="Index" class="btn btn-light border-start text-danger px-3"><i class="bi bi-x-lg"></i></a>
+                }
+            </div>
+        </form>
     </div>
 
-    <div class="card shadow border-0 rounded-3">
-        <div class="card-header bg-white py-3">
-            <h6 class="m-0 font-weight-bold text-primary">All Venues</h6>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-uppercase text-secondary small">
-                        <tr>
-                            <th class="ps-4">ID</th>
-                            <th>Venue Name</th>
-                            <th>Created Date</th>
-                            <th class="text-end pe-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
+    <div class="card-body p-0 border-top">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-uppercase text-secondary small">
+                    <tr>
+                        <th class="ps-4 py-3">ID</th>
+                        <th class="py-3">Venue Name</th>
+                        <th class="py-3">Created Date</th>
+                        <th class="text-end pe-4 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
                         {
                             <tr>
-                                <td class="ps-4 fw-bold">#@item.MeetingVenueID</td>
+                                <td class="ps-4 fw-bold text-dark">#@item.MeetingVenueID</td>
                                 <td>
-                                    <i class="bi bi-geo-alt-fill text-danger me-2"></i>
-                                    <span class="fw-medium">@item.MeetingVenueName</span>
+                                    <span class="badge bg-info bg-opacity-10 text-info border border-info-subtle px-2 py-1">
+                                        <i class="bi bi-door-open-fill me-1"></i> @item.MeetingVenueName
+                                    </span>
                                 </td>
-                                <td class="text-muted small">
-                                    @(item.Created?.ToString("dd MMM yyyy") ?? "N/A")
-                                </td>
+                                <td class="text-muted small">@(item.Created.HasValue ? item.Created.Value.ToString("dd MMM yyyy") : "N/A")</td>
                                 <td class="text-end pe-4">
                                     <a asp-action="AddEdit" asp-route-id="@item.MeetingVenueID" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
                                     <a asp-action="Delete" asp-route-id="@item.MeetingVenueID" class="btn btn-sm btn-outline-danger">Delete</a>
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-                @if (!Model.Any()) {
-                    <div class="text-center py-5"><p class="text-muted">No venues found.</p></div>
-                }
-            </div>
+                    }
+                </tbody>
+            </table>
+            @if (Model == null || !Model.Any())
+            {
+                <div class="text-center py-5">
+                    <p class="text-muted mb-0">No venues found.</p>
+                </div>
+            }
         </div>
     </div>
 </div>

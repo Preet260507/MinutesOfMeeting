@@ -17,9 +17,7 @@ namespace MOM_Project.Controllers
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        // ---------------------------------------------------------
-        // 1. INDEX: Grid of All Meetings
-        // ---------------------------------------------------------
+        #region GetAllMembers
         public IActionResult Index()
         {
             var list = new List<Meeting>();
@@ -30,6 +28,7 @@ namespace MOM_Project.Controllers
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetMeetings", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("p_SearchTerm", "");
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -49,10 +48,9 @@ namespace MOM_Project.Controllers
             }
             return View(list);
         }
-
-        // ---------------------------------------------------------
-        // 2. MANAGE (GET): Show Members + Add Form
-        // ---------------------------------------------------------
+        #endregion
+        
+        #region ManageMembers
         public IActionResult Manage(int id)
         {
             ViewBag.MeetingID = id;
@@ -130,10 +128,9 @@ namespace MOM_Project.Controllers
             ViewBag.AvailableStaff = availableStaff;
             return View(currentMembers);
         }
-
-        // ---------------------------------------------------------
-        // 3. ADD MEMBER (POST)
-        // ---------------------------------------------------------
+        #endregion
+        
+        #region AddMember
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddMember(int meetingId, int staffId)
@@ -154,14 +151,9 @@ namespace MOM_Project.Controllers
             }
             return RedirectToAction("Manage", new { id = meetingId });
         }
-
-        // ---------------------------------------------------------
-        // 4. REMOVE MEMBER (POST)
-        // ---------------------------------------------------------
+        #endregion
+        
         #region Remove Member
-        // ---------------------------------------------------------
-        // 4. REMOVE (GET): Show Confirmation Page
-        // ---------------------------------------------------------
         public IActionResult RemoveMember(int meetingId, int staffId)
         {
             Staff staff = new Staff();
@@ -209,10 +201,7 @@ namespace MOM_Project.Controllers
             }
             return View(staff);
         }
-
-        // ---------------------------------------------------------
-        // 5. REMOVE (POST): Actually Remove the Member
-        // ---------------------------------------------------------
+        
         [HttpPost, ActionName("RemoveMember")]
         [ValidateAntiForgeryToken]
         public IActionResult RemoveMemberConfirmed(int meetingId, int staffId)

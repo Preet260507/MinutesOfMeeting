@@ -18,19 +18,31 @@ namespace MOM_Project.Controllers
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        #region Index
-        // ---------------------------------------------------------
-        // 1. INDEX: List all types (with Remarks)
-        // ---------------------------------------------------------
+        #region Get All & Search
         public IActionResult Index()
+        {
+            return GetFilteredMeetingTypes(""); 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Index(IFormCollection form)
+        {
+            string searchTerm = form["searchTerm"].ToString();
+            ViewBag.SearchTerm = searchTerm; 
+            return GetFilteredMeetingTypes(searchTerm);
+        }
+
+        private IActionResult GetFilteredMeetingTypes(string searchTerm)
         {
             List<MeetingType> list = new List<MeetingType>();
             using (MySqlConnection conn = new MySqlConnection(_connString))
             {
                 conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand("sp_GetAllTypes", conn))
+                using (MySqlCommand cmd = new MySqlCommand("sp_GetAllMeetingTypes", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("p_SearchTerm", searchTerm ?? "");
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -47,7 +59,7 @@ namespace MOM_Project.Controllers
                     }
                 }
             }
-            return View(list);
+            return View("Index", list);
         }
         #endregion
 

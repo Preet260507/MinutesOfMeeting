@@ -1,68 +1,73 @@
 @model IEnumerable<MOM_Project.Models.MeetingType>
+@{ ViewData["Title"] = "Meeting Types"; }
 
-@{
-    ViewData["Title"] = "Meeting Types";
-}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-primary fw-bold">Meeting Types</h2>
+        <p class="text-muted">Manage categories and tags for your meetings.</p>
+    </div>
+    <a asp-action="AddEdit" class="btn btn-primary shadow-sm">
+        <i class="bi bi-tags-fill me-2"></i> Add New Type
+    </a>
+</div>
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-primary fw-bold">Meeting Types</h2>
-            <p class="text-muted">Manage the categories for your organization's meetings.</p>
-        </div>
-        <a asp-action="AddEdit" class="btn btn-primary shadow-sm">
-            <i class="bi bi-person-plus-fill"></i> Add New Type
-        </a>
+<div class="card shadow border-0 rounded-3">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+        <h6 class="m-0 font-weight-bold text-primary">All Meeting Types</h6>
+        
+        <form asp-action="Index" method="post" class="m-0">
+            <div class="input-group shadow-sm" style="max-width: 400px; border-radius: 0.75rem; overflow: hidden;">
+                <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control premium-input border-0" placeholder="Search types..." aria-label="Search">
+                <button class="btn btn-primary px-4 fw-bold" type="submit"><i class="bi bi-search"></i></button>
+                @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+                {
+                    <a asp-action="Index" class="btn btn-light border-start text-danger px-3"><i class="bi bi-x-lg"></i></a>
+                }
+            </div>
+        </form>
     </div>
 
-    <div class="card shadow border-0 rounded-3">
-        <div class="card-header bg-white py-3">
-            <h6 class="m-0 font-weight-bold text-primary">All Meeting Types</h6>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-uppercase text-secondary small">
-                        <tr>
-                            <th class="ps-4">ID</th>
-                            <th>Type Name</th>
-                            <th>Created</th>
-                            <th>modified</th>
-                            <th class="text-end pe-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
+    <div class="card-body p-0 border-top">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-uppercase text-secondary small">
+                    <tr>
+                        <th class="ps-4 py-3">ID</th>
+                        <th class="py-3">Type Name</th>
+                        <th class="py-3">Remarks</th>
+                        <th class="py-3">Created Date</th>
+                        <th class="text-end pe-4 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
                         {
                             <tr>
-                                <td class="ps-4 fw-bold">#@item.MeetingTypeID</td>
+                                <td class="ps-4 fw-bold text-dark">#@item.MeetingTypeID</td>
                                 <td>
-                                    <span class="badge bg-soft-primary text-primary border border-primary-subtle">
+                                    <span class="badge bg-info bg-opacity-10 text-info border border-info-subtle px-2 py-1">
                                         @item.MeetingTypeName
                                     </span>
                                 </td>
-                                <td class="text-muted">
-                                    @item.Created
-                                </td>
-                                <td class="text-muted">
-                                    @item.Modified
-                                </td>
+                                <td class="text-muted small">@(string.IsNullOrEmpty(item.Remarks) ? "-" : item.Remarks)</td>
+                                <td class="text-muted small">@(item.Created.Year > 1 ? item.Created.ToString("dd MMM yyyy") : "N/A")</td>
                                 <td class="text-end pe-4">
                                     <a asp-action="AddEdit" asp-route-id="@item.MeetingTypeID" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
                                     <a asp-action="Delete" asp-route-id="@item.MeetingTypeID" class="btn btn-sm btn-outline-danger">Delete</a>
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-                
-                @if (!Model.Any())
-                {
-                    <div class="text-center py-5">
-                        <p class="text-muted mb-0">No meeting types found. Click "Add New Type" to start.</p>
-                    </div>
-                }
-            </div>
+                    }
+                </tbody>
+            </table>
+            @if (Model == null || !Model.Any())
+            {
+                <div class="text-center py-5">
+                    <p class="text-muted mb-0">No meeting types found.</p>
+                </div>
+            }
         </div>
     </div>
 </div>
