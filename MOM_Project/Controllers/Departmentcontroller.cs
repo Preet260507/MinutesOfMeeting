@@ -63,13 +63,18 @@ namespace MOM_Project.Controllers
                     }
                 }
             }
+
             return View("Index", list); // explicitly return the Index view
         }
         #endregion
         
         #region AddEditDepartment
         public IActionResult AddEdit(int? id)
+        
         {
+            string loggedInUser = HttpContext.Session.GetString("AdminUser");
+            if(loggedInUser == null) 
+                return RedirectToAction("Index", "Login");
             Department department = new Department();
 
             // EDIT MODE: If ID is provided, fetch existing data
@@ -150,6 +155,8 @@ namespace MOM_Project.Controllers
 // 1. GET: Show the delete confirmation page
 public IActionResult Delete(int? id)
 {
+    if (HttpContext.Session.GetString("AdminUser") == null) 
+        return RedirectToAction("Index", "Login");
     if (id == null) return NotFound();
     Department model = new Department();
     string connectionString = _configuration.GetConnectionString("DefaultConnection");

@@ -21,6 +21,9 @@ namespace MOM_Project.Controllers
         #region Get All & Search
         public IActionResult Index()
         {
+            string loggedInUser = HttpContext.Session.GetString("AdminUser");
+            if(loggedInUser == null) 
+                return RedirectToAction("Index", "Login");
             return GetFilteredVenues(""); 
         }
 
@@ -28,6 +31,10 @@ namespace MOM_Project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(IFormCollection form)
         {
+            string loggedInUser = HttpContext.Session.GetString("AdminUser");
+            if(loggedInUser == null) 
+                return RedirectToAction("Index", "Login");
+
             string searchTerm = form["searchTerm"].ToString();
             ViewBag.SearchTerm = searchTerm; 
             return GetFilteredVenues(searchTerm);
@@ -66,6 +73,9 @@ namespace MOM_Project.Controllers
         [HttpGet]
         public IActionResult AddEdit(int? id)
         {
+            string loggedInUser = HttpContext.Session.GetString("AdminUser");
+            if(loggedInUser == null) 
+                return RedirectToAction("Index", "Login");
             MeetingVenue model = new MeetingVenue();
             
             if (id.HasValue && id > 0)
@@ -149,6 +159,9 @@ namespace MOM_Project.Controllers
         #region Delete Venues
         public IActionResult Delete(int? id)
         {
+            string loggedInUser = HttpContext.Session.GetString("AdminUser");
+            if(loggedInUser == null) 
+                return RedirectToAction("Index", "Login");
             if (id == null) return NotFound();
             MeetingVenue model = new MeetingVenue();
             

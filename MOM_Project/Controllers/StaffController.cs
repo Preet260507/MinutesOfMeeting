@@ -5,6 +5,8 @@ using MySqlConnector;
 using System.Data;
 using System;
 using System.Collections.Generic;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace MOM_Project.Controllers
 {
@@ -19,6 +21,43 @@ namespace MOM_Project.Controllers
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
 
+        #region Export To Excel 
+        public IActionResult ExportToExcel()
+        {
+            DataTable dt = new DataTable("StaffDirectory");
+            using (MySqlConnection conn = new MySqlConnection(_connString))
+            {
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand("sp_GetAllStaff", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("p_SearchTerm", ""); // Get ALL staff
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            dt.Load(reader); 
+                        }
+                    }
+            }
+            
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Staff Directory");
+                var excelTable = worksheet.Cell(1, 1).InsertTable(dt.AsEnumerable(), "StaffTable", true);
+                excelTable.Theme = XLTableTheme.None;
+                
+                var headerRow = worksheet.Row(1);
+                headerRow.Style.Font.Bold = true;
+                worksheet.Columns().AdjustToContents();
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Staff_Directory.xlsx");
+                }
+            }
+        }
+        #endregion
+        
         #region Get All & Search
         public IActionResult Index()
         {

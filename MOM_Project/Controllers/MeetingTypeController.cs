@@ -35,6 +35,10 @@ namespace MOM_Project.Controllers
 
         private IActionResult GetFilteredMeetingTypes(string searchTerm)
         {
+            string loggedInUser = HttpContext.Session.GetString("AdminUser");
+            if(loggedInUser == null) 
+                return RedirectToAction("Index", "Login");
+
             List<MeetingType> list = new List<MeetingType>();
             using (MySqlConnection conn = new MySqlConnection(_connString))
             {
@@ -69,6 +73,8 @@ namespace MOM_Project.Controllers
         // ---------------------------------------------------------
         public IActionResult AddEdit(int? id)
         {
+            if (HttpContext.Session.GetString("AdminUser") == null) 
+                return RedirectToAction("Index", "Login");
             MeetingType type = new MeetingType();
 
             // EDIT MODE: Fetch data

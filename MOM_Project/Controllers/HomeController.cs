@@ -19,8 +19,10 @@ namespace MOM_Project.Controllers
         public IActionResult Index()
         {
             // 1. Check Login
-            if (HttpContext.Session.GetString("AdminUser") == null) 
+            string loggedInUser = HttpContext.Session.GetString("AdminUser");
+            if(loggedInUser == null) 
                 return RedirectToAction("Index", "Login");
+
 
             // Variables for the View
             var chartLabels = new List<string>();
