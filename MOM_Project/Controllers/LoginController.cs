@@ -1,20 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
-using MOM_Project.Models; // Make sure this is here!
+using MOM_Project.Models; 
+using MOM_Project.Services; 
 using MySqlConnector;
 using System.Data;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MOM_Project.Controllers
-{
+{    [AllowAnonymous]
     public class LoginController : Controller
     {
         private readonly IConfiguration _configuration;
         private readonly string _connString;
+        private readonly AuthService _authService;
 
-        public LoginController(IConfiguration configuration)
+        // Injecting both Configuration (for the DB) and AuthService (for the Session)
+        public LoginController(IConfiguration configuration, AuthService authService)
         {
             _configuration = configuration;
             _connString = _configuration.GetConnectionString("DefaultConnection");
+            _authService = authService;
         }
 
         // ---------------------------------------------------------
@@ -24,18 +29,17 @@ namespace MOM_Project.Controllers
         public IActionResult Index() 
         {
             TempData.Clear(); 
-            // We pass an empty UserModel to the view so it can bind to it
             return View(new UserModel());
         }
 
         // ---------------------------------------------------------
-        // POST: Process Login via UserModel
+        // POST: Process Login
         // ---------------------------------------------------------
         [HttpPost]
-        [ValidateAntiForgeryToken] // Security measure
+        [ValidateAntiForgeryToken] 
         public IActionResult Login(UserModel model)
         {
-            // 1. Check if the model passes our [Required] validation
+            // 1. Check if the form is valid (no empty fields)
             if (!ModelState.IsValid)
             {
                 return View("Index", model);
@@ -54,7 +58,6 @@ namespace MOM_Project.Controllers
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         
-                        // Pull the data directly from our UserModel!
                         cmd.Parameters.AddWithValue("p_UserName", model.UserName);
                         cmd.Parameters.AddWithValue("p_Password", model.Password);
 
@@ -78,17 +81,18 @@ namespace MOM_Project.Controllers
             // 3. Handle the result
             if (isValidUser)
             {
+                // Trigger success popup
                 TempData["ErrorType"] = "success";
                 TempData["Message"] = $"Login successful! Welcome back, {loggedInUser}.";
-
-                if (loggedInUser != null) HttpContext.Session.SetString("AdminUser", loggedInUser);
-
+                
+                // Use our new AuthService to set the session!
+                _authService.LoginUser(loggedInUser);
+                
                 return RedirectToAction("Index", "Home");
             }
             else
             {
                 ViewBag.Error = "Invalid Username or Password";
-                // Return the model back so the username they typed stays in the box!
                 return View("Index", model);
             }
         }
@@ -98,9 +102,12 @@ namespace MOM_Project.Controllers
         // ---------------------------------------------------------
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear(); 
+            // Use our AuthService to clear the session!
+            _authService.LogoutUser(); 
+            
             TempData["ErrorType"] = "success";
             TempData["Message"] = "You have been logged out securely.";
+            
             return RedirectToAction("Index"); 
         }
     }

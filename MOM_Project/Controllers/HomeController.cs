@@ -2,27 +2,34 @@ using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using System.Data;
 using System.Text.Json;
+using MOM_Project.Filters;   // 🌟 Added this
+using MOM_Project.Services;  // 🌟 Added this
 
 namespace MOM_Project.Controllers
 {
+    // 🌟 1. This single tag locks down the ENTIRE dashboard!
+    [ServiceFilter(typeof(CheckAccessFilter))]
     public class HomeController : Controller
     {
         private readonly IConfiguration _configuration;
         private readonly string _connString;
+        private readonly AuthService _authService; // 🌟 2. Added AuthService
 
-        public HomeController(IConfiguration configuration)
+        // 🌟 3. Injected AuthService alongside your Configuration
+        public HomeController(IConfiguration configuration, AuthService authService)
         {
             _configuration = configuration;
             _connString = _configuration.GetConnectionString("DefaultConnection");
+            _authService = authService;
         }
 
         public IActionResult Index()
         {
-            // 1. Check Login
-            string loggedInUser = HttpContext.Session.GetString("AdminUser");
-            if(loggedInUser == null) 
-                return RedirectToAction("Index", "Login");
+            // 🌟 4. NOTICE WHAT'S MISSING? The manual session check and RedirectToAction are GONE!
+            // The [ServiceFilter] handled it before this method even started.
 
+            // Optional: Grab the user's name so you can say "Welcome back, {Name}" on the dashboard
+            ViewBag.UserName = _authService.GetUserName();
 
             // Variables for the View
             var chartLabels = new List<string>();
@@ -41,7 +48,7 @@ namespace MOM_Project.Controllers
                         if (reader.Read())
                         {
                             ViewBag.TotalMeetings = reader["TotalMeetings"];
-                            ViewBag.TotalStaff = reader["TotalStaff"]; // Works now!
+                            ViewBag.TotalStaff = reader["TotalStaff"]; 
                             ViewBag.Venues = reader["TotalVenues"];
                             ViewBag.Upcoming = reader["Upcoming"];
                         }
