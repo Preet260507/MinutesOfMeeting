@@ -12,7 +12,7 @@ ViewData["Title"] = isEdit ? "Edit Meeting" : "Schedule Meeting";
                 <input type="hidden" asp-for="MeetingID" />
 
                 <div class="card shadow-lg border-0 rounded-4">
-                    <div class="card-header py-4 px-4 bg-primary text-white rounded-top-4">
+                    <div class="btn btn-primary btn-lg px-5 fw-bold shadow-sm">
                         <h4 class="mb-0 fw-bold">
                             <i class="bi @(isEdit ? "bi-pencil-square" : "bi-calendar-plus") me-2"></i>
                             @(isEdit ? "Edit Meeting Details" : "Schedule New Meeting")

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -98,36 +98,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
-        $(document).ready(function () {
-            $("#menu-toggle").click(function (e) {
-                e.preventDefault();
-                $("#wrapper").toggleClass("toggled");
-            });
-        });
-    </script>
-
-    <script>
-        var msgType = '@TempData["ErrorType"]';
-        var message = '@TempData["Message"]';
-
-        if (msgType && message) {
-            if (msgType == 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: message,
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            }
-            else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: message
-                });
-            }
-        }
+        showNotification('@TempData["ErrorType"]', '@TempData["Message"]');
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

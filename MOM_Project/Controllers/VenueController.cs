@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using MOM_Project.Models;
 using MySqlConnector;
 using System.Data;
-using System;
-using System.Collections.Generic;
 
 namespace MOM_Project.Controllers
 {
@@ -18,25 +16,17 @@ namespace MOM_Project.Controllers
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        #region Get All & Search
         public IActionResult Index()
         {
-            string loggedInUser = HttpContext.Session.GetString("AdminUser");
-            if(loggedInUser == null) 
-                return RedirectToAction("Index", "Login");
-            return GetFilteredVenues(""); 
+            return GetFilteredVenues("");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Index(IFormCollection form)
         {
-            string loggedInUser = HttpContext.Session.GetString("AdminUser");
-            if(loggedInUser == null) 
-                return RedirectToAction("Index", "Login");
-
             string searchTerm = form["searchTerm"].ToString();
-            ViewBag.SearchTerm = searchTerm; 
+            ViewBag.SearchTerm = searchTerm;
             return GetFilteredVenues(searchTerm);
         }
 
@@ -67,17 +57,12 @@ namespace MOM_Project.Controllers
             }
             return View("Index", list);
         }
-        #endregion
 
-        #region Add/Edit Venue
         [HttpGet]
         public IActionResult AddEdit(int? id)
         {
-            string loggedInUser = HttpContext.Session.GetString("AdminUser");
-            if(loggedInUser == null) 
-                return RedirectToAction("Index", "Login");
             MeetingVenue model = new MeetingVenue();
-            
+
             if (id.HasValue && id > 0)
             {
                 using (MySqlConnection conn = new MySqlConnection(_connString))
@@ -87,7 +72,7 @@ namespace MOM_Project.Controllers
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("p_ID", id);
-                        
+
                         using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
@@ -105,10 +90,7 @@ namespace MOM_Project.Controllers
             }
             return View(model);
         }
-        
-        // ---------------------------------------------------------
-        // 3. ADD/EDIT (POST): Save data
-        // ---------------------------------------------------------
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddEdit(MeetingVenue model)
@@ -120,51 +102,39 @@ namespace MOM_Project.Controllers
                     using (MySqlConnection conn = new MySqlConnection(_connString))
                     {
                         conn.Open();
-                        MySqlCommand cmd;
-                        
                         bool isNew = model.MeetingVenueID == 0;
+                        string spName = isNew ? "sp_InsertVenue" : "sp_UpdateVenue";
 
-                        if (isNew)
+                        using (MySqlCommand cmd = new MySqlCommand(spName, conn))
                         {
-                            cmd = new MySqlCommand("sp_InsertVenue", conn);
                             cmd.CommandType = CommandType.StoredProcedure;
-                        }
-                        else
-                        {
-                            cmd = new MySqlCommand("sp_UpdateVenue", conn);
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("p_ID", model.MeetingVenueID);
+
+                            if (!isNew)
+                                cmd.Parameters.AddWithValue("p_ID", model.MeetingVenueID);
+
+                            cmd.Parameters.AddWithValue("p_Name", model.MeetingVenueName);
+                            cmd.ExecuteNonQuery();
                         }
 
-                        cmd.Parameters.AddWithValue("p_Name", model.MeetingVenueName);
-                        cmd.ExecuteNonQuery();
-
-                        // 🌟 SUCCESS POPUP TRIGGER 🌟
                         TempData["ErrorType"] = "success";
                         TempData["Message"] = isNew ? "Venue added successfully!" : "Venue updated successfully!";
                     }
                     return RedirectToAction(nameof(Index));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    // 🚨 ERROR POPUP TRIGGER 🚨
                     TempData["ErrorType"] = "error";
                     TempData["Message"] = "An error occurred while saving the Venue.";
                 }
             }
             return View(model);
         }
-        #endregion
 
-        #region Delete Venues
         public IActionResult Delete(int? id)
         {
-            string loggedInUser = HttpContext.Session.GetString("AdminUser");
-            if(loggedInUser == null) 
-                return RedirectToAction("Index", "Login");
             if (id == null) return NotFound();
             MeetingVenue model = new MeetingVenue();
-            
+
             using (MySqlConnection connection = new MySqlConnection(_connString))
             {
                 connection.Open();
@@ -172,15 +142,14 @@ namespace MOM_Project.Controllers
                 {
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("p_ID", id);
-                    
+
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             model.MeetingVenueID = reader.GetInt32("MeetingVenueID");
                             model.MeetingVenueName = reader.GetString("MeetingVenueName");
-                            
-                            // Safety check for null dates
+
                             if (!reader.IsDBNull(reader.GetOrdinal("Created")))
                                 model.Created = reader.GetDateTime("Created");
                             if (!reader.IsDBNull(reader.GetOrdinal("Modified")))
@@ -188,7 +157,7 @@ namespace MOM_Project.Controllers
                         }
                         else
                         {
-                            return NotFound(); 
+                            return NotFound();
                         }
                     }
                 }
@@ -196,9 +165,6 @@ namespace MOM_Project.Controllers
             return View(model);
         }
 
-        // ---------------------------------------------------------
-        // 5. DELETE (POST): Actually delete the record
-        // ---------------------------------------------------------
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -212,10 +178,8 @@ namespace MOM_Project.Controllers
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("p_ID", id);
-                        
                         command.ExecuteNonQuery();
 
-                        // 🌟 SUCCESS POPUP TRIGGER 🌟
                         TempData["ErrorType"] = "success";
                         TempData["Message"] = "Venue deleted successfully!";
                     }
@@ -223,26 +187,19 @@ namespace MOM_Project.Controllers
             }
             catch (MySqlException ex)
             {
-                // Check for "Foreign Key Constraint" error (Error Code 1451)
+                TempData["ErrorType"] = "error";
                 if (ex.Number == 1451)
                 {
-                    // 🚨 ERROR POPUP TRIGGER 🚨
-                    TempData["ErrorType"] = "error";
                     TempData["Message"] = "Cannot delete this Venue because it is currently assigned to existing Meetings. Please reassign or delete those meetings first.";
-                
-                    return Delete(id); 
                 }
                 else
                 {
-                    // Catch-all for other DB errors
-                    TempData["ErrorType"] = "error";
                     TempData["Message"] = "A database error occurred while trying to delete the Venue.";
-                    return Delete(id); 
                 }
+                return Delete(id);
             }
-    
+
             return RedirectToAction(nameof(Index));
         }
-        #endregion
     }
 }

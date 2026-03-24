@@ -1,6 +1,6 @@
 using MOM_Project.Models;
 
-namespace MOM_Project.ViewModels
+namespace MOM_Project.Models
 {
     public class MeetingMemberVM
     {

@@ -1,4 +1,28 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+// Sidebar toggle
+$(document).ready(function () {
+    $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+});
 
-// Write your JavaScript code.
+// SweetAlert notification handler
+function showNotification(msgType, message) {
+    if (msgType && message) {
+        if (msgType === 'success') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: message,
+                timer: 3000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: message
+            });
+        }
+    }
+}

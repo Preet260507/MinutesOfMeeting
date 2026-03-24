@@ -7,39 +7,37 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 
 namespace MOM_Project.Controllers
-{    [AllowAnonymous]
+{    
+    [AllowAnonymous]
     public class LoginController : Controller
     {
+        #region Iconfiguration
         private readonly IConfiguration _configuration;
         private readonly string _connString;
         private readonly AuthService _authService;
-
-        // Injecting both Configuration (for the DB) and AuthService (for the Session)
+        
         public LoginController(IConfiguration configuration, AuthService authService)
         {
             _configuration = configuration;
             _connString = _configuration.GetConnectionString("DefaultConnection");
             _authService = authService;
         }
-
-        // ---------------------------------------------------------
-        // GET: Show Login Page
-        // ---------------------------------------------------------
+        #endregion
+        
+        #region LoginPage
         [HttpGet]
         public IActionResult Index() 
         {
             TempData.Clear(); 
             return View(new UserModel());
         }
+        #endregion
 
-        // ---------------------------------------------------------
-        // POST: Process Login
-        // ---------------------------------------------------------
+        #region Login
         [HttpPost]
         [ValidateAntiForgeryToken] 
         public IActionResult Login(UserModel model)
         {
-            // 1. Check if the form is valid (no empty fields)
             if (!ModelState.IsValid)
             {
                 return View("Index", model);
@@ -48,7 +46,6 @@ namespace MOM_Project.Controllers
             bool isValidUser = false;
             string loggedInUser = "";
 
-            // 2. Connect to the database to verify credentials
             try
             {
                 using (MySqlConnection conn = new MySqlConnection(_connString))
@@ -78,14 +75,11 @@ namespace MOM_Project.Controllers
                 return View("Index", model);
             }
 
-            // 3. Handle the result
             if (isValidUser)
             {
-                // Trigger success popup
                 TempData["ErrorType"] = "success";
                 TempData["Message"] = $"Login successful! Welcome back, {loggedInUser}.";
-                
-                // Use our new AuthService to set the session!
+ 
                 _authService.LoginUser(loggedInUser);
                 
                 return RedirectToAction("Index", "Home");
@@ -96,13 +90,11 @@ namespace MOM_Project.Controllers
                 return View("Index", model);
             }
         }
-
-        // ---------------------------------------------------------
-        // GET: Logout Action
-        // ---------------------------------------------------------
+        #endregion
+        
+        #region Logout
         public IActionResult Logout()
         {
-            // Use our AuthService to clear the session!
             _authService.LogoutUser(); 
             
             TempData["ErrorType"] = "success";
@@ -110,5 +102,6 @@ namespace MOM_Project.Controllers
             
             return RedirectToAction("Index"); 
         }
+        #endregion
     }
 }

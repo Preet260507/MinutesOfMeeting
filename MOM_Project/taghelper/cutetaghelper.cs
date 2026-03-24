@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace CustomTagHelpers.TagHelpers
+namespace MOM_Project.TagHelpers
 {
     [HtmlTargetElement("cute")]
     public class CuteTagHelper : TagHelper

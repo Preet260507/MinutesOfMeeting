@@ -10,6 +10,7 @@ namespace MOM_Project.Controllers
 {
     public class MeetingController : Controller
     {
+        #region Iconfiguration
         private readonly IConfiguration _configuration;
         private readonly string _connString;
 
@@ -18,11 +19,9 @@ namespace MOM_Project.Controllers
             _configuration = configuration;
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
-
+        #endregion
+        
         #region Get All Meetings
-        // ---------------------------------------------------------
-        // 1. INDEX: List all scheduled meetings
-        // ---------------------------------------------------------
         public IActionResult Index()
         {
             var list = new List<Meeting>();
@@ -42,8 +41,7 @@ namespace MOM_Project.Controllers
                                 MeetingID = Convert.ToInt32(reader["MeetingID"]),
                                 MeetingDescription = reader["MeetingDescription"].ToString(),
                                 MeetingDate = Convert.ToDateTime(reader["MeetingDate"]),
-        
-                                // Safe checks for Start/End time to prevent casting errors
+                                
                                 StartTime = reader["StartTime"] != DBNull.Value 
                                     ? (TimeSpan)reader["StartTime"] 
                                     : TimeSpan.Zero, 
@@ -66,9 +64,6 @@ namespace MOM_Project.Controllers
         #endregion
 
         #region Schedule / Edit Meeting
-        // ---------------------------------------------------------
-        // 2. ADD/EDIT (GET): Show form
-        // ---------------------------------------------------------
         public IActionResult AddEdit(int? id)
         {
             Meeting meeting = new Meeting();
@@ -114,30 +109,23 @@ namespace MOM_Project.Controllers
             }
             return View(meeting);
         }
-
-        // ---------------------------------------------------------
-        // 3. ADD/EDIT (POST): Save data
-        // ---------------------------------------------------------
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddEdit(Meeting meeting)
         {
-            // --- 1. CUSTOM VALIDATION ---
             DateTime fullStartDateTime = meeting.MeetingDate.Date.Add(meeting.StartTime);
 
-            // Rule A: Meetings cannot be in the past
             if (fullStartDateTime < DateTime.Now)
             {
                 ModelState.AddModelError("MeetingDate", "You cannot schedule a meeting in the past.");
             }
 
-            // Rule B: End time must be after Start time
             if (meeting.EndTime <= meeting.StartTime)
             {
                 ModelState.AddModelError("EndTime", "End time must be later than the start time.");
             }
 
-            // --- 2. SAVE IF VALID ---
             if (ModelState.IsValid)
             {
                 try
@@ -171,8 +159,7 @@ namespace MOM_Project.Controllers
                         cmd.Parameters.AddWithValue("p_TypeID", meeting.MeetingTypeID ?? (object)DBNull.Value);
                         
                         cmd.ExecuteNonQuery();
-
-                        // 🌟 SUCCESS POPUP TRIGGER 🌟
+                        
                         TempData["ErrorType"] = "success";
                         TempData["Message"] = isNew ? "Meeting scheduled successfully!" : "Meeting details updated successfully!";
                     }
@@ -180,23 +167,18 @@ namespace MOM_Project.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // 🚨 ERROR POPUP TRIGGER 🚨
                     TempData["ErrorType"] = "error";
                     TempData["Message"] = "An error occurred while scheduling the meeting.";
                     ModelState.AddModelError("", "Database Error: " + ex.Message);
                 }
             }
 
-            // --- 3. IF VALIDATION FAILS ---
             LoadDropdowns(); 
             return View(meeting); 
         }
         #endregion
 
         #region Cancel Meeting
-        // ---------------------------------------------------------
-        // 4. CANCEL MEETING: Mark meeting as cancelled
-        // ---------------------------------------------------------
         public IActionResult Cancel(int id)
         {
             try
@@ -209,8 +191,7 @@ namespace MOM_Project.Controllers
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("p_ID", id);
                         cmd.ExecuteNonQuery();
-
-                        // 🌟 SUCCESS POPUP TRIGGER 🌟
+                        
                         TempData["ErrorType"] = "success";
                         TempData["Message"] = "Meeting has been successfully cancelled.";
                     }
@@ -218,7 +199,6 @@ namespace MOM_Project.Controllers
             }
             catch (Exception ex)
             {
-                // 🚨 ERROR POPUP TRIGGER 🚨
                 TempData["ErrorType"] = "error";
                 TempData["Message"] = "Failed to cancel the meeting. Please try again.";
             }
@@ -228,9 +208,6 @@ namespace MOM_Project.Controllers
         #endregion
 
         #region Helper Methods
-        // ---------------------------------------------------------
-        // Helper to load Venues AND Meeting Types for dropdowns
-        // ---------------------------------------------------------
         private void LoadDropdowns()
         {
             var venues = new List<SelectListItem>();
@@ -240,7 +217,6 @@ namespace MOM_Project.Controllers
             {
                 conn.Open();
                 
-                // 1. Venues
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetAllVenues", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -257,8 +233,7 @@ namespace MOM_Project.Controllers
                         }
                     }
                 }
-
-                // 2. Types
+                
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetAllMeetingTypes", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;

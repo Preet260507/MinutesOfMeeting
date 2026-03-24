@@ -9,6 +9,7 @@
   --shadow-glow: 0 0 20px rgba(118, 75, 162, 0.15);
   --radius-xl: 20px;
   --radius-md: 12px;
+  --sidebar-width: 280px;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -31,16 +32,16 @@ body {
 
 /* --- 3. PREMIUM SIDEBAR --- */
 #sidebar-wrapper {
-  min-width: 280px;
-  max-width: 280px;
+  min-width: var(--sidebar-width);
+  max-width: var(--sidebar-width);
   height: 100vh;
-  /* The Gradient Background */
   background: var(--primary-gradient);
   color: #fff;
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 25px rgba(0,0,0,0.05);
   z-index: 1000;
+  transition: margin-left 0.35s ease-in-out, min-width 0.35s ease-in-out;
 }
 
 .sidebar-heading {
@@ -51,7 +52,7 @@ body {
   color: #fff;
   display: flex;
   align-items: center;
-  background: rgba(0,0,0,0.1); /* Subtle darkening */
+  background: rgba(0,0,0,0.1);
 }
 
 /* Glassy Menu Items */
@@ -96,11 +97,12 @@ body {
   height: 100vh;
   overflow-y: auto;
   position: relative;
+  transition: all 0.35s ease-in-out;
 }
 
 .navbar-glass {
   background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px); /* The "Frosted Glass" effect */
+  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255,255,255,0.3);
   padding: 1rem 2rem;
@@ -119,7 +121,6 @@ body {
   overflow: hidden;
 }
 
-/* FIX: Only apply hover animation to cards with the 'hover-effect' class */
 .card.hover-effect:hover {
   transform: translateY(-5px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -173,20 +174,15 @@ body {
   letter-spacing: 0.3px;
 }
 
-/* Sidebar Toggle Animation */
-#wrapper {
-  overflow-x: hidden;
-  transition: all 0.7s ease-in-out;
-}
-
+/* --- 8. SIDEBAR TOGGLE ANIMATION --- */
 #wrapper.toggled #sidebar-wrapper {
-  margin-left: -15rem; /* Matches your sidebar width */
+  margin-left: calc(-1 * var(--sidebar-width));
 }
 
-/* On mobile, invert the behavior so it hides by default */
-@media (max-width: 788px) {
+/* Mobile: hide sidebar by default, show on toggle */
+@media (max-width: 768px) {
   #sidebar-wrapper {
-    margin-left: -5rem;
+    margin-left: calc(-1 * var(--sidebar-width));
   }
   #wrapper.toggled #sidebar-wrapper {
     margin-left: 0;

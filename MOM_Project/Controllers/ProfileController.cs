@@ -8,6 +8,7 @@ namespace MOM_Project.Controllers
 {
     public class ProfileController : Controller
     {
+        #region Iconfiguration
         private readonly IConfiguration _configuration;
         private readonly string _connString;
         private readonly IWebHostEnvironment _webHostEnvironment; // Lets us access the wwwroot folder
@@ -19,7 +20,8 @@ namespace MOM_Project.Controllers
             _connString = _configuration.GetConnectionString("DefaultConnection");
             _webHostEnvironment = webHostEnvironment;
         }
-
+        #endregion
+        
         #region ViewProfile
         public IActionResult Index()
         {

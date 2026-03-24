@@ -12,6 +12,7 @@ namespace MOM_Project.Controllers
 {
     public class StaffController : Controller
     {
+        #region Iconfiguration
         private readonly IConfiguration _configuration;
         private readonly string _connString;
 
@@ -20,7 +21,8 @@ namespace MOM_Project.Controllers
             _configuration = configuration;
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
-
+        #endregion
+        
         #region Export To Excel 
         public IActionResult ExportToExcel()
         {
