@@ -19,18 +19,10 @@ namespace MOM_Project.Controllers
         }
 
         #region Get All & Search
-        public IActionResult Index()
+        public IActionResult Index(string searchTerm)
         {
-            return GetFilteredMeetingTypes(""); 
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Index(IFormCollection form)
-        {
-            string searchTerm = form["searchTerm"].ToString();
-            ViewBag.SearchTerm = searchTerm; 
-            return GetFilteredMeetingTypes(searchTerm);
+            ViewBag.SearchTerm = searchTerm;
+            return GetFilteredMeetingTypes(searchTerm ?? "");
         }
 
         private IActionResult GetFilteredMeetingTypes(string searchTerm)

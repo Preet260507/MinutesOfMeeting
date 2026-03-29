@@ -61,18 +61,10 @@ namespace MOM_Project.Controllers
         #endregion
         
         #region Get All & Search
-        public IActionResult Index()
+        public IActionResult Index(string searchTerm)
         {
-            return GetFilteredStaff(""); 
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Index(IFormCollection form)
-        {
-            string searchTerm = form["searchTerm"].ToString();
-            ViewBag.SearchTerm = searchTerm; 
-            return GetFilteredStaff(searchTerm);
+            ViewBag.SearchTerm = searchTerm;
+            return GetFilteredStaff(searchTerm ?? "");
         }
 
         private IActionResult GetFilteredStaff(string searchTerm)

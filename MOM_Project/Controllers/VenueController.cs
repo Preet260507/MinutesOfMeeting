@@ -16,18 +16,10 @@ namespace MOM_Project.Controllers
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string searchTerm)
         {
-            return GetFilteredVenues("");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Index(IFormCollection form)
-        {
-            string searchTerm = form["searchTerm"].ToString();
             ViewBag.SearchTerm = searchTerm;
-            return GetFilteredVenues(searchTerm);
+            return GetFilteredVenues(searchTerm ?? "");
         }
 
         private IActionResult GetFilteredVenues(string searchTerm)
