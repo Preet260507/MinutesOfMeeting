@@ -19,18 +19,10 @@ namespace MOM_Project.Controllers
         #endregion
 
         #region Index
-        public IActionResult Index()
+        public IActionResult Index(string searchTerm)
         {
-            return GetFilteredDepartments("");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Index(IFormCollection form)
-        {
-            string searchTerm = form["searchTerm"].ToString();
             ViewBag.SearchTerm = searchTerm;
-            return GetFilteredDepartments(searchTerm);
+            return GetFilteredDepartments(searchTerm ?? "");
         }
         #endregion
 
