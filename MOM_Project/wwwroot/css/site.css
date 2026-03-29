@@ -188,3 +188,39 @@ body {
     margin-left: 0;
   }
 }
+
+/* --- 9. FORM FOCUS STYLES --- */
+.form-control:focus,
+.form-select:focus {
+  border-color: #764ba2;
+  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.15);
+}
+
+.premium-input {
+  background: #f8fafc;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+}
+
+.premium-input:focus {
+  background: #fff;
+}
+
+/* --- 10. CLICKABLE STAT CARDS --- */
+.stat-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.12);
+  color: inherit;
+}
+
+.stat-card:hover .card {
+  box-shadow: var(--shadow-glow);
+}
