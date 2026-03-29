@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Dashboard";
 }
 
@@ -6,7 +6,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h2 class="fw-bold text-dark mb-1">Welcome back, Admin! 👋</h2>
+            <h2 class="fw-bold text-dark mb-1">Welcome back, @ViewBag.UserName! 👋</h2>
             <p class="text-muted">Here is what's happening in your organization today.</p>
         </div>
         <a asp-controller="Meeting" asp-action="AddEdit" class="btn btn-primary px-4 py-2 shadow-sm">
@@ -16,61 +16,68 @@
 
     <div class="row g-4 mb-5">
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <i class="bi bi-calendar-event fs-3"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small text-uppercase fw-bold">Upcoming</div>
-                        <div class="fs-2 fw-bold text-dark">@ViewBag.Upcoming</div>
+            <a asp-controller="Meeting" asp-action="Index" class="stat-card">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="bi bi-calendar-event fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small text-uppercase fw-bold">Upcoming</div>
+                            <div class="fs-2 fw-bold text-dark">@ViewBag.Upcoming</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #FF9D6C 0%, #BB4E75 100%);">
-                        <i class="bi bi-people fs-3"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small text-uppercase fw-bold">Total Staff</div>
-                        <div class="fs-2 fw-bold text-dark">@ViewBag.TotalStaff</div>
+            <a asp-controller="Staff" asp-action="Index" class="stat-card">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #FF9D6C 0%, #BB4E75 100%);">
+                            <i class="bi bi-people fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small text-uppercase fw-bold">Total Staff</div>
+                            <div class="fs-2 fw-bold text-dark">@ViewBag.TotalStaff</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                        <i class="bi bi-check2-circle fs-3"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small text-uppercase fw-bold">Total Meetings</div>
-                        <div class="fs-2 fw-bold text-dark">@ViewBag.TotalMeetings</div>
+            <a asp-controller="Meeting" asp-action="Index" class="stat-card">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <i class="bi bi-check2-circle fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small text-uppercase fw-bold">Total Meetings</div>
+                            <div class="fs-2 fw-bold text-dark">@ViewBag.TotalMeetings</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
+
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <i class="bi bi-geo-alt fs-3"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small text-uppercase fw-bold">Venues</div>
-                        <div class="fs-2 fw-bold text-dark">@ViewBag.Venues</div>
+            <a asp-controller="Venue" asp-action="Index" class="stat-card">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-3 p-3 text-white shadow-lg me-3" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="bi bi-geo-alt fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small text-uppercase fw-bold">Venues</div>
+                            <div class="fs-2 fw-bold text-dark">@ViewBag.Venues</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
-        
-        
     </div>
 
     <div class="row">
@@ -115,16 +122,13 @@
     document.addEventListener("DOMContentLoaded", function () {
         var ctx = document.getElementById('dashboardChart').getContext('2d');
 
-        // Create a pretty gradient for the chart
         var gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(118, 75, 162, 0.4)'); // Purple (matches your theme)
-        gradient.addColorStop(1, 'rgba(118, 75, 162, 0.0)'); // Transparent
+        gradient.addColorStop(0, 'rgba(118, 75, 162, 0.4)');
+        gradient.addColorStop(1, 'rgba(118, 75, 162, 0.0)');
 
-        // Get Data safely from ViewBag
         var labels = @Html.Raw(ViewBag.ChartLabels ?? "[]");
         var dataPoints = @Html.Raw(ViewBag.ChartData ?? "[]");
 
-        // Fallback if no data (shows empty graph instead of crashing)
         if (labels.length === 0) {
             labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
             dataPoints = [0, 0, 0, 0, 0, 0];
@@ -137,15 +141,15 @@
                 datasets: [{
                     label: 'Meetings Scheduled',
                     data: dataPoints,
-                    borderColor: '#764ba2',       // Purple Line
-                    backgroundColor: gradient,    // Gradient Fill
+                    borderColor: '#764ba2',
+                    backgroundColor: gradient,
                     borderWidth: 3,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#764ba2',
                     pointRadius: 6,
                     pointHoverRadius: 8,
                     fill: true,
-                    tension: 0.4                  // Smooth Curves
+                    tension: 0.4
                 }]
             },
             options: {

@@ -52,7 +52,7 @@
                             </div>
                             <div class="d-flex align-items-center text-dark fw-bold">
                                 <i class="bi bi-clock me-2 text-secondary"></i> 
-                                @item.MeetingDate.ToString("hh:mm tt")
+                                @item.StartTime.ToString(@"hh\:mm") – @item.EndTime.ToString(@"hh\:mm")
                             </div>
                         </div>
 
@@ -84,6 +84,22 @@
                                 }
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="col-12">
+                <div class="card shadow-sm border-0 p-5 text-center">
+                    <i class="bi bi-calendar-x display-3 mb-3 d-block text-muted opacity-25"></i>
+                    <h5 class="text-muted mb-2">No meetings scheduled yet</h5>
+                    <p class="text-muted small mb-4">Get started by scheduling your first meeting.</p>
+                    <div>
+                        <a asp-action="AddEdit" class="btn btn-primary px-4 fw-bold shadow-sm">
+                            <i class="bi bi-plus-lg me-2"></i>Schedule Meeting
+                        </a>
                     </div>
                 </div>
             </div>
