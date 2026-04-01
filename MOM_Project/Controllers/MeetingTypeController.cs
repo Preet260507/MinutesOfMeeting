@@ -9,6 +9,7 @@ namespace MOM_Project.Controllers
 {
     public class MeetingTypeController : Controller
     {
+        #region Iconfiguration
         private readonly IConfiguration _configuration;
         private readonly string _connString;
 
@@ -17,6 +18,7 @@ namespace MOM_Project.Controllers
             _configuration = configuration;
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
+        #endregion
 
         #region Get All & Search
         public IActionResult Index(string searchTerm)

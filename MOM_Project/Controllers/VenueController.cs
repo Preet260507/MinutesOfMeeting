@@ -7,6 +7,7 @@ namespace MOM_Project.Controllers
 {
     public class VenueController : Controller
     {
+        #region Iconfiguration
         private readonly IConfiguration _configuration;
         private readonly string _connString;
 
@@ -15,7 +16,9 @@ namespace MOM_Project.Controllers
             _configuration = configuration;
             _connString = _configuration.GetConnectionString("DefaultConnection");
         }
-
+        #endregion
+        
+        #region GetAll and Search
         public IActionResult Index(string searchTerm)
         {
             ViewBag.SearchTerm = searchTerm;
@@ -49,9 +52,11 @@ namespace MOM_Project.Controllers
             }
             return View("Index", list);
         }
+        #endregion
 
+        #region AddEditVenues
         [HttpGet]
-        public IActionResult AddEdit(int? id)
+                public IActionResult AddEdit(int? id)
         {
             MeetingVenue model = new MeetingVenue();
 
@@ -121,7 +126,9 @@ namespace MOM_Project.Controllers
             }
             return View(model);
         }
-
+        #endregion
+        
+        #region Delete Meeting
         public IActionResult Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -156,7 +163,7 @@ namespace MOM_Project.Controllers
             }
             return View(model);
         }
-
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -193,5 +200,9 @@ namespace MOM_Project.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        
+        #endregion
+        
     }
 }
+    

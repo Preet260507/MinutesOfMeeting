@@ -100,9 +100,6 @@ namespace MOM_Project.Controllers
         #endregion
 
         #region Add/Edit Staff
-        // ---------------------------------------------------------
-        // 2. ADD/EDIT (GET): Show Form
-        // ---------------------------------------------------------
         public IActionResult AddEdit(int? id)
         {
             Staff staff = new Staff();
@@ -139,10 +136,7 @@ namespace MOM_Project.Controllers
             }
             return View(staff);
         }
-
-        // ---------------------------------------------------------
-        // 3. ADD/EDIT (POST): Save Data
-        // ---------------------------------------------------------
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddEdit(Staff staff)
@@ -180,8 +174,7 @@ namespace MOM_Project.Controllers
                             cmd.Parameters.AddWithValue("p_DepartmentID", DBNull.Value);
 
                         cmd.ExecuteNonQuery();
-
-                        // 🌟 SUCCESS POPUP TRIGGER 🌟
+                        
                         TempData["ErrorType"] = "success";
                         TempData["Message"] = isNew ? "Staff member added successfully!" : "Staff member updated successfully!";
                     }
@@ -189,23 +182,18 @@ namespace MOM_Project.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // 🚨 ERROR POPUP TRIGGER 🚨
                     TempData["ErrorType"] = "error";
                     TempData["Message"] = "An error occurred while saving the staff member.";
                     ModelState.AddModelError("", "Database Error: " + ex.Message);
                 }
             }
-
-            // Validation Failed? Reload Dropdown!
+            
             ViewBag.Departments = GetDepartmentList();
             return View(staff);
         }
         #endregion
 
         #region Delete Staff
-        // ---------------------------------------------------------
-        // 4. DELETE (GET): Show Confirmation Page
-        // ---------------------------------------------------------
         public IActionResult Delete(int id)
         {
             Staff staff = new Staff();
@@ -234,10 +222,7 @@ namespace MOM_Project.Controllers
             }
             return View(staff);
         }
-
-        // ---------------------------------------------------------
-        // 5. DELETE (POST): Actually Delete
-        // ---------------------------------------------------------
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -253,7 +238,6 @@ namespace MOM_Project.Controllers
                         cmd.Parameters.AddWithValue("p_ID", id);
                         cmd.ExecuteNonQuery();
 
-                        // 🌟 SUCCESS POPUP TRIGGER 🌟
                         TempData["ErrorType"] = "success";
                         TempData["Message"] = "Staff member deleted successfully!";
                     }
@@ -261,19 +245,15 @@ namespace MOM_Project.Controllers
             }
             catch (MySqlException ex)
             {
-                // Check for "Foreign Key Constraint" error (Error Code 1451)
                 if (ex.Number == 1451)
                 {
-                    // 🚨 ERROR POPUP TRIGGER 🚨
                     TempData["ErrorType"] = "error";
                     TempData["Message"] = "Cannot delete this Staff member because they are currently assigned to existing Meetings. Please remove them from the meetings first.";
                 
-                    // Reload the GET Delete view to stay on the page and show the popup
                     return Delete(id); 
                 }
                 else
                 {
-                    // Catch-all for other DB errors
                     TempData["ErrorType"] = "error";
                     TempData["Message"] = "A database error occurred while trying to delete the staff member.";
                     return Delete(id); 
