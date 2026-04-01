@@ -293,9 +293,6 @@ namespace MOM_Project.Controllers
                 using (MySqlCommand cmd = new MySqlCommand("sp_GetAllDepartments", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-            
-                    // 🌟 ADD THIS EXACT LINE 🌟
-                    // This satisfies the database by sending a blank search term for the dropdown
                     cmd.Parameters.AddWithValue("p_SearchTerm", ""); 
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
